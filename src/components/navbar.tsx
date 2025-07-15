@@ -35,7 +35,7 @@ export default function AnimatedNavbar() {
           className="revealed text-white font-bold"
         />
         <div className="flex gap-x-4">
-          <Link href="/">
+          <Link href="#about-me">
             <DecryptedText
               text="About me"
               speed={100}
@@ -46,7 +46,7 @@ export default function AnimatedNavbar() {
               className="revealed text-white font-bold"
             />
           </Link>
-          <Link href="/proyects">
+          <Link href="#projects">
             <DecryptedText
               text="Projects"
               speed={100}
@@ -57,7 +57,7 @@ export default function AnimatedNavbar() {
               className="revealed text-white font-bold"
             />
           </Link>
-          <Link href="/">
+          <Link href="#contact">
             <DecryptedText
               text="Contact"
               speed={100}
