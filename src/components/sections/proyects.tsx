@@ -7,21 +7,25 @@ const projects = [
     title: "Proyecto 1",
     description: "Una breve descripción del proyecto 1.",
     image: "/placeholder.svg",
+    link: "#",
   },
   {
     title: "Proyecto 2",
     description: "Una breve descripción del proyecto 2.",
     image: "/placeholder.svg",
+    link: "#",
   },
   {
     title: "Proyecto 3",
     description: "Una breve descripción del proyecto 3.",
     image: "/placeholder.svg",
+    link: "#",
   },
   {
     title: "Proyecto 4",
     description: "Una breve descripción del proyecto 4.",
     image: "/placeholder.svg",
+    link: "#",
   },
 ];
 
@@ -49,7 +53,8 @@ export default function ProjectsSection() {
                 delay: index * 0.1,
               }}
               viewport={{ once: true }}
-              className="bg-[#2a2928] rounded-lg overflow-hidden"
+              className="group relative bg-[#2a2928] rounded-lg overflow-hidden"
+              whileHover={{ scale: 1.05 }}
             >
               <Image
                 src={project.image}
@@ -63,6 +68,16 @@ export default function ProjectsSection() {
                   {project.title}
                 </h3>
                 <p className="text-gray-300">{project.description}</p>
+              </div>
+              <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white text-lg font-bold"
+                >
+                  Ver más
+                </a>
               </div>
             </motion.div>
           ))}

@@ -19,30 +19,33 @@ export default function ContactSection() {
           Puedes encontrarme en las siguientes plataformas:
         </p>
         <div className="flex justify-center gap-8">
-          <a
+          <motion.a
             href="https://github.com"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white hover:text-gray-400 transition-colors"
+            whileHover={{ y: -10 }}
           >
             <FaGithub size={32} className="md:size-40" />
-          </a>
-          <a
+          </motion.a>
+          <motion.a
             href="https://linkedin.com"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white hover:text-gray-400 transition-colors"
+            whileHover={{ y: -10 }}
           >
             <FaLinkedin size={32} className="md:size-40" />
-          </a>
-          <a
+          </motion.a>
+          <motion.a
             href="https://twitter.com"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white hover:text-gray-400 transition-colors"
+            whileHover={{ y: -10 }}
           >
             <FaTwitter size={32} className="md:size-40" />
-          </a>
+          </motion.a>
         </div>
       </motion.div>
     </section>
