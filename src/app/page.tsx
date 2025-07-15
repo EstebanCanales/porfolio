@@ -1,17 +1,19 @@
 import Navbar from "@/components/navbar";
 import HeroSection from "@/components/sections/hero-section";
-import AboutMeSection from "@/components/sections/about-me";
+import AboutSection from "@/components/sections/about";
 import ProjectsSection from "@/components/sections/proyects";
 import ContactSection from "@/components/sections/contact";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <section className="bg-[#252423]">
+    <main>
       <Navbar />
       <HeroSection />
-      <AboutMeSection />
+      <AboutSection />
       <ProjectsSection />
       <ContactSection />
-    </section>
+      <Footer />
+    </main>
   );
 }

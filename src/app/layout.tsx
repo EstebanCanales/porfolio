@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Roboto_Mono } from "next/font/google";
+import { Lato } from "next/font/google";
 import "./globals.css";
 
-const roboto_mono = Roboto_Mono({
+const lato = Lato({
   subsets: ["latin"],
-  variable: "--font-roboto-mono",
+  weight: ["400", "700"],
+  variable: "--font-lato",
 });
 
 export const metadata: Metadata = {
@@ -18,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="bg-[#252423]">
-      <body className={`${roboto_mono.variable} antialiased`}>{children}</body>
+    <html lang="en" className="bg-[#1a1a1a]">
+      <body className={`${lato.variable} antialiased`}>{children}</body>
     </html>
   );
 }

@@ -1,118 +1,88 @@
 "use client";
-import DecryptedText from "./DecryptedText";
-import React, { useState } from "react";
+import { motion, useAnimation } from "framer-motion";
+import { useEffect, useState } from "react";
+import { FiHome, FiUser, FiBriefcase, FiMail } from "react-icons/fi";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { FiMenu, FiX } from "react-icons/fi";
 
-export default function AnimatedNavbar() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function Navbar() {
+  const [hidden, setHidden] = useState(false);
+  const controls = useAnimation();
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+
+    const updateScrollDirection = () => {
+      const scrollY = window.scrollY;
+      const direction = scrollY > lastScrollY ? "down" : "up";
+      if (
+        direction === "down" &&
+        scrollY > 50 &&
+        !hidden
+      ) {
+        setHidden(true);
+      } else if (direction === "up" && hidden) {
+        setHidden(false);
+      }
+      lastScrollY = scrollY > 0 ? scrollY : 0;
+    };
+
+    window.addEventListener("scroll", updateScrollDirection);
+
+    return () => {
+      window.removeEventListener("scroll", updateScrollDirection);
+    };
+  }, [hidden]);
+
+  useEffect(() => {
+    if (hidden) {
+      controls.start("hidden");
+    } else {
+      controls.start("visible");
+    }
+  }, [hidden, controls]);
 
   return (
     <motion.nav
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeInOut" }}
-      style={{
-        borderColor: "rgba(230, 230, 230, 0.15)",
-        backdropFilter: "blur(24px)",
+      variants={{
+        visible: { y: 0 },
+        hidden: { y: "-100%" },
       }}
-      className="border-b-2 fixed border-dashed z-10 min-w-full"
+      initial="visible"
+      animate={controls}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+      className="fixed top-0 left-0 right-0 z-10 bg-transparent"
     >
-      <div className="flex justify-between max-w-7xl border-x-2 border-dashed mx-auto min-h-14 px-10 items-center">
-        <DecryptedText
-          text="Bettotwo"
-          speed={100}
-          animateOn="view"
-          useOriginalCharsOnly
-          sequential
-          revealDirection="start"
-          className="revealed text-white font-bold"
-        />
-        <div className="hidden md:flex gap-x-4">
-          <Link href="#about-me">
-            <DecryptedText
-              text="About me"
-              speed={100}
-              useOriginalCharsOnly
-              animateOn="view"
-              sequential
-              revealDirection="start"
-              className="revealed text-white font-bold"
-            />
-          </Link>
-          <Link href="#projects">
-            <DecryptedText
-              text="Projects"
-              speed={100}
-              animateOn="view"
-              sequential
-              useOriginalCharsOnly
-              revealDirection="start"
-              className="revealed text-white font-bold"
-            />
-          </Link>
-          <Link href="#contact">
-            <DecryptedText
-              text="Contact"
-              speed={100}
-              animateOn="view"
-              sequential
-              useOriginalCharsOnly
-              revealDirection="start"
-              className="revealed text-white font-bold"
-            />
-          </Link>
-        </div>
-        <div className="md:hidden">
-          <button onClick={toggleMenu} className="text-white">
-            {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-          </button>
-        </div>
-      </div>
-      {isOpen && (
-        <div className="md:hidden bg-[#252423] py-4">
-          <div className="flex flex-col items-center gap-y-4">
-            <Link href="#about-me" onClick={toggleMenu}>
-              <DecryptedText
-                text="About me"
-                speed={100}
-                useOriginalCharsOnly
-                animateOn="view"
-                sequential
-                revealDirection="start"
-                className="revealed text-white font-bold"
-              />
-            </Link>
-            <Link href="#projects" onClick={toggleMenu}>
-              <DecryptedText
-                text="Projects"
-                speed={100}
-                animateOn="view"
-                sequential
-                useOriginalCharsOnly
-                revealDirection="start"
-                className="revealed text-white font-bold"
-              />
-            </Link>
-            <Link href="#contact" onClick={toggleMenu}>
-              <DecryptedText
-                text="Contact"
-                speed={100}
-                animateOn="view"
-                sequential
-                useOriginalCharsOnly
-                revealDirection="start"
-                className="revealed text-white font-bold"
-              />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex-shrink-0">
+            <Link href="/" className="text-white font-bold text-xl">
+              Bettotwo
             </Link>
           </div>
+          <div className="flex items-center gap-x-4">
+            <motion.div whileHover={{ scale: 1.2 }}>
+              <Link href="#home" className="text-white">
+                <FiHome size={24} />
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.2 }}>
+              <Link href="#about" className="text-white">
+                <FiUser size={24} />
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.2 }}>
+              <Link href="#projects" className="text-white">
+                <FiBriefcase size={24} />
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.2 }}>
+              <Link href="#contact" className="text-white">
+                <FiMail size={24} />
+              </Link>
+            </motion.div>
+          </div>
         </div>
-      )}
+      </div>
     </motion.nav>
   );
 }
