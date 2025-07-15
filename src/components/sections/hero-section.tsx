@@ -18,9 +18,12 @@ export default function HeroSection() {
           className="border-2 border-dashed h-auto md:h-screen w-full p-4 md:ml-12 flex items-center justify-center"
         >
           <div className="text-center">
-            <h1 className="text-6xl font-bold text-white mb-4">Mi Portafolio</h1>
-            <p className="text-xl text-gray-300">
-              Bienvenido a mi portafolio personal. Aquí puedes encontrar información sobre mí, mis proyectos y cómo contactarme.
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+              Mi Portafolio
+            </h1>
+            <p className="text-lg md:text-xl text-gray-300">
+              Bienvenido a mi portafolio personal. Aquí puedes encontrar
+              información sobre mí, mis proyectos y cómo contactarme.
             </p>
           </div>
         </motion.div>
