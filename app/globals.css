@@ -242,6 +242,17 @@
   animation: eq-bar 1.1s ease-in-out infinite;
 }
 
+/* Nav link slide-in hover */
+.nav-link-slide:hover .nav-link-bg {
+  transform: translateX(0%) !important;
+}
+.nav-link-slide .nav-link-text {
+  transition: color 0.15s ease;
+}
+.nav-link-slide:hover .nav-link-text {
+  color: var(--nav-link-hover-text) !important;
+}
+
 /* B2 logo stroke outline animation on hover */
 .b2-path {
   stroke-dasharray: 1;

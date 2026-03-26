@@ -1,4 +1,4 @@
-import Link from "next/link";
+import TransitionLink from "@/components/transition-link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
@@ -6,6 +6,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 
 const accent = "#06D6A0";
+const accentText = "#047A5E"; // versión oscura para texto sobre blanco
 
 const TECH_SLUG: Record<string, string> = {
   "Next.js 16": "nextdotjs",
@@ -60,7 +61,7 @@ export const metadata: Metadata = {
 
 export default function QxenithPage() {
   return (
-    <div className="min-h-screen bg-[#0f0c0a] flex flex-col relative">
+    <div className="min-h-screen bg-white flex flex-col relative" style={{ color: "#1e1030" }}>
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
@@ -72,36 +73,37 @@ export default function QxenithPage() {
         }}
       />
 
-      <Navbar accent={accent} />
+      <Navbar accent={accent} light bg="rgba(255,255,255,0.92)" borderCol={`${accent}40`} />
 
-      <main className="flex-1 flex flex-col px-6 md:px-10 lg:px-16 pt-20 pb-20 relative z-10">
+      <main className="flex-1 flex flex-col px-6 md:px-10 lg:px-16 pt-14 pb-20 relative z-10">
         {/* Back */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors font-mono mb-12 group w-fit"
+        <TransitionLink
+          href="/work"
+          className="inline-flex items-center gap-1.5 text-xs font-mono mb-12 group w-fit opacity-50 hover:opacity-100 transition-opacity"
+          style={{ color: "#1e1030" }}
         >
           <ArrowLeft className="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />
           back
-        </Link>
+        </TransitionLink>
 
         {/* Header */}
         <div className="mb-8">
-          <p className="text-[10px] font-mono uppercase tracking-widest mb-2" style={{ color: accent }}>
+          <p className="text-[10px] font-mono uppercase tracking-widest mb-2" style={{ color: accentText }}>
             2026 · Creative Technologist
           </p>
           <div className="flex items-center justify-between gap-4 mb-1">
-            <h1 className="text-3xl md:text-5xl font-light font-mono tracking-tight text-foreground">
+            <h1 className="text-3xl md:text-5xl font-light font-mono tracking-tight" style={{ color: "#1e1030" }}>
               QXENITH
             </h1>
           </div>
-          <p className="text-sm font-mono text-muted-foreground">Digital Studio Website</p>
+          <p className="text-sm font-mono" style={{ color: "rgba(30,16,48,0.5)" }}>Digital Studio Website</p>
         </div>
 
         {/* Divider */}
         <div className="w-full h-px mb-10" style={{ backgroundColor: `${accent}30` }} />
 
         {/* Description */}
-        <p className="text-sm text-foreground/70 leading-relaxed max-w-2xl mb-8">
+        <p className="text-sm leading-relaxed max-w-2xl mb-8" style={{ color: "rgba(30,16,48,0.7)" }}>
           Full production website for QXENITH — a digital studio built around the idea that interfaces
           should feel alive. Every interaction was designed from scratch: a 6×6 flip-card hero grid
           that expands on scroll, a morphing circular navigation menu, animated SVG color bars in 7
@@ -117,9 +119,9 @@ export default function QxenithPage() {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-sm font-mono px-5 py-2.5 rounded transition-opacity hover:opacity-70 group mb-14 w-fit"
           style={{
-            color: accent,
-            backgroundColor: `${accent}15`,
-            border: `1px solid ${accent}40`,
+            color: accentText,
+            backgroundColor: `${accent}25`,
+            border: `1px solid ${accent}60`,
           }}
         >
           View Project
@@ -150,13 +152,13 @@ export default function QxenithPage() {
         {/* Technical grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-16 gap-y-12 max-w-4xl">
           <div>
-            <p className="text-[10px] font-mono uppercase tracking-widest mb-5 text-muted-foreground/60">
+            <p className="text-[10px] font-mono uppercase tracking-widest mb-5" style={{ color: "rgba(30,16,48,0.55)" }}>
               What was built
             </p>
             <ul className="space-y-3.5">
               {features.map((f) => (
-                <li key={f} className="flex gap-3 text-sm text-foreground/75 leading-relaxed">
-                  <span className="shrink-0 w-1 h-1 rounded-full mt-[7px]" style={{ backgroundColor: accent }} />
+                <li key={f} className="flex gap-3 text-sm leading-relaxed" style={{ color: "rgba(30,16,48,0.85)" }}>
+                  <span className="shrink-0 w-1 h-1 rounded-full mt-[7px]" style={{ backgroundColor: accentText }} />
                   {f}
                 </li>
               ))}
@@ -164,7 +166,7 @@ export default function QxenithPage() {
           </div>
 
           <div>
-            <p className="text-[10px] font-mono uppercase tracking-widest mb-5 text-muted-foreground/60">
+            <p className="text-[10px] font-mono uppercase tracking-widest mb-5" style={{ color: "rgba(30,16,48,0.55)" }}>
               What we learned
             </p>
             <ul className="space-y-5">
@@ -174,11 +176,11 @@ export default function QxenithPage() {
                 const body = dash !== -1 ? l.slice(dash + 3) : "";
                 return (
                   <li key={title}>
-                    <span className="font-mono text-[11px] block mb-1" style={{ color: accent }}>
+                    <span className="font-mono text-[11px] block mb-1" style={{ color: accentText }}>
                       {title}
                     </span>
                     {body && (
-                      <span className="text-sm text-foreground/65 leading-relaxed">{body}</span>
+                      <span className="text-sm leading-relaxed" style={{ color: "rgba(30,16,48,0.75)" }}>{body}</span>
                     )}
                   </li>
                 );
@@ -189,7 +191,7 @@ export default function QxenithPage() {
 
         {/* Stack */}
         <div className="mt-12 max-w-4xl">
-          <p className="text-[10px] font-mono uppercase tracking-widest mb-3 text-muted-foreground/60">
+          <p className="text-[10px] font-mono uppercase tracking-widest mb-3" style={{ color: "rgba(30,16,48,0.55)" }}>
             Stack
           </p>
           <div className="flex flex-wrap gap-2">
@@ -200,9 +202,9 @@ export default function QxenithPage() {
                   key={t}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono rounded"
                   style={{
-                    color: accent,
-                    backgroundColor: `${accent}12`,
-                    border: `1px solid ${accent}30`,
+                    color: accentText,
+                    backgroundColor: `${accent}20`,
+                    border: `1px solid ${accent}50`,
                   }}
                 >
                   {slug && (
@@ -212,7 +214,7 @@ export default function QxenithPage() {
                       alt=""
                       width={12}
                       height={12}
-                      style={{ filter: "brightness(0) invert(1)", opacity: 0.7 }}
+                      style={{ filter: "brightness(0)", opacity: 0.5 }}
                     />
                   )}
                   {t}
@@ -223,7 +225,7 @@ export default function QxenithPage() {
         </div>
       </main>
 
-      <Footer accent={accent} />
+      <Footer accent={accent} light hints={[]} />
     </div>
   );
 }

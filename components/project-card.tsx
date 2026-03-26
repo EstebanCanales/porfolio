@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import TransitionLink from "./transition-link";
 import { ArrowUpRight } from "lucide-react";
 import type { Project } from "@/lib/projects";
 
@@ -56,7 +56,7 @@ export default function ProjectCard({
   const displayName = useDecryptEffect(project.name, isHovered);
 
   return (
-    <Link
+    <TransitionLink
       href={`/${project.slug}`}
       onMouseEnter={() => {
         setIsHovered(true);
@@ -72,10 +72,10 @@ export default function ProjectCard({
       <span className="text-[10px] text-muted-foreground font-mono w-5 opacity-40 group-hover:opacity-100 transition-opacity">
         {String(index + 1).padStart(2, "0")}
       </span>
-      <span className="text-base md:text-lg font-light tracking-tight text-foreground group-hover:text-primary transition-colors font-mono">
+      <span className="text-2xl md:text-3xl font-light tracking-tight text-foreground group-hover:text-primary transition-colors font-mono">
         {displayName}
       </span>
       <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-    </Link>
+    </TransitionLink>
   );
 }

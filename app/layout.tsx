@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
+import PageTransitionProvider from "@/components/page-transition"
 import "./globals.css"
 
 export const viewport: Viewport = {
@@ -49,7 +50,9 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`font-mono ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
         <Suspense fallback={null}>
-          {children}
+          <PageTransitionProvider>
+            {children}
+          </PageTransitionProvider>
           <Analytics />
         </Suspense>
       </body>

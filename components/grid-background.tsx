@@ -51,6 +51,8 @@ type GridBackgroundProps = {
   maxFps?: number;
   /** Max devicePixelRatio to render at. Default 1 — renders at native res. */
   maxPixelRatio?: number;
+  /** Ref that receives a function to programmatically trigger ripples at normalized (0-1) positions. */
+  rippleTriggerRef?: React.MutableRefObject<((positions: { nx: number; ny: number }[]) => void) | null>;
 };
 
 const createTouchTexture = (): TouchTexture => {
@@ -207,10 +209,8 @@ const int SHAPE_CIRCLE   = 1;
 const int SHAPE_TRIANGLE = 2;
 const int SHAPE_DIAMOND  = 3;
 
-const int   MAX_CLICKS = 10;
-
-uniform vec2  uClickPos  [MAX_CLICKS];
-uniform float uClickTimes[MAX_CLICKS];
+uniform sampler2D uRippleData;
+uniform int       uRippleCount;
 
 out vec4 fragColor;
 
@@ -306,13 +306,13 @@ void main(){
   const float dampR     = 10.0;
 
   if (uEnableRipples == 1) {
-    for (int i = 0; i < MAX_CLICKS; ++i){
-      vec2 pos = uClickPos[i];
-      if (pos.x < 0.0) continue;
-      float cellPixelSize = 8.0 * pixelSize;
-      vec2 cuv = (((pos - uResolution * .5 - cellPixelSize * .5) / (uResolution))) * vec2(aspectRatio, 1.0);
-      float t = max(uTime - uClickTimes[i], 0.0);
-      float r = distance(uv, cuv);
+    for (int i = 0; i < uRippleCount; ++i){
+      vec4 rd  = texelFetch(uRippleData, ivec2(i, 0), 0);
+      vec2 pos = rd.xy;
+      float cs = 8.0 * pixelSize;
+      vec2 cuv = (((pos - uResolution * .5 - cs * .5) / (uResolution))) * vec2(aspectRatio, 1.0);
+      float t  = max(uTime - rd.z, 0.0);
+      float r  = distance(uv, cuv);
       float waveR = speed * t;
       float ring  = exp(-pow((r - waveR) / thickness, 2.0));
       float atten = exp(-dampT * t) * exp(-dampR * r);
@@ -352,7 +352,8 @@ void main(){
 }
 `;
 
-const MAX_CLICKS = 10;
+const RIPPLE_TEX_SIZE = 1024;
+const RIPPLE_LIFETIME = 3.0;
 
 const GridBackground: React.FC<GridBackgroundProps> = ({
   variant = "square",
@@ -379,6 +380,7 @@ const GridBackground: React.FC<GridBackgroundProps> = ({
   noiseAmount = 0,
   maxFps = 30,
   maxPixelRatio = 1,
+  rippleTriggerRef,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const visibilityRef = useRef({ visible: true });
@@ -410,13 +412,12 @@ const GridBackground: React.FC<GridBackgroundProps> = ({
     camera: THREE.OrthographicCamera;
     material: THREE.ShaderMaterial;
     clock: THREE.Clock;
-    clickIx: number;
     uniforms: {
       uResolution: { value: THREE.Vector2 };
       uTime: { value: number };
       uColor: { value: THREE.Color };
-      uClickPos: { value: THREE.Vector2[] };
-      uClickTimes: { value: Float32Array };
+      uRippleData: { value: THREE.DataTexture };
+      uRippleCount: { value: number };
       uShapeType: { value: number };
       uPixelSize: { value: number };
       uScale: { value: number };
@@ -469,17 +470,26 @@ const GridBackground: React.FC<GridBackgroundProps> = ({
     container.appendChild(renderer.domElement);
     if (transparent) renderer.setClearAlpha(0);
     else renderer.setClearColor(0x000000, 1);
+    const rippleTexData = new Float32Array(RIPPLE_TEX_SIZE * 4);
+    const rippleTex = new THREE.DataTexture(
+      rippleTexData, RIPPLE_TEX_SIZE, 1,
+      THREE.RGBAFormat, THREE.FloatType,
+    );
+    rippleTex.minFilter = THREE.NearestFilter;
+    rippleTex.magFilter = THREE.NearestFilter;
+    rippleTex.needsUpdate = true;
+    const activeRipples: { x: number; y: number; t: number }[] = [];
+    let ripplesDirty = false;
+    const addRipple = (x: number, y: number) => {
+      activeRipples.push({ x, y, t: uniforms.uTime.value });
+      ripplesDirty = true;
+    };
     const uniforms = {
       uResolution: { value: new THREE.Vector2(0, 0) },
       uTime: { value: 0 },
       uColor: { value: new THREE.Color(color) },
-      uClickPos: {
-        value: Array.from(
-          { length: MAX_CLICKS },
-          () => new THREE.Vector2(-1, -1),
-        ),
-      },
-      uClickTimes: { value: new Float32Array(MAX_CLICKS) },
+      uRippleData: { value: rippleTex },
+      uRippleCount: { value: 0 },
       uShapeType: { value: SHAPE_MAP[variant] ?? 0 },
       uPixelSize: { value: pixelSize * renderer.getPixelRatio() },
       uScale: { value: patternScale },
@@ -590,24 +600,36 @@ const GridBackground: React.FC<GridBackgroundProps> = ({
         h: renderer.domElement.height,
       };
     };
+    let pointerDown = false;
+    let lastBrushX = 0;
+    let lastBrushY = 0;
+    const BRUSH_SPACING = 20; // px between ripples while painting
+
     const onPointerDown = (e: PointerEvent) => {
       const { fx, fy } = mapToPixels(e);
-      const ix = threeRef.current?.clickIx ?? 0;
-      uniforms.uClickPos.value[ix].set(fx, fy);
-      uniforms.uClickTimes.value[ix] = uniforms.uTime.value;
-      if (threeRef.current) threeRef.current.clickIx = (ix + 1) % MAX_CLICKS;
+      pointerDown = true;
+      lastBrushX = fx;
+      lastBrushY = fy;
+      addRipple(fx, fy);
     };
     const onPointerMove = (e: PointerEvent) => {
-      if (!touch) return;
       const { fx, fy, w, h } = mapToPixels(e);
-      touch.addTouch({ x: fx / w, y: fy / h });
+      if (touch) touch.addTouch({ x: fx / w, y: fy / h });
+      if (!pointerDown) return;
+      const dx = fx - lastBrushX;
+      const dy = fy - lastBrushY;
+      if (dx * dx + dy * dy >= BRUSH_SPACING * BRUSH_SPACING) {
+        addRipple(fx, fy);
+        lastBrushX = fx;
+        lastBrushY = fy;
+      }
     };
-    renderer.domElement.addEventListener("pointerdown", onPointerDown, {
-      passive: true,
-    });
-    renderer.domElement.addEventListener("pointermove", onPointerMove, {
-      passive: true,
-    });
+    const onPointerUp = () => { pointerDown = false; };
+    const onPointerLeave = () => { pointerDown = false; };
+    renderer.domElement.addEventListener("pointerdown", onPointerDown, { passive: true });
+    renderer.domElement.addEventListener("pointermove", onPointerMove, { passive: true });
+    renderer.domElement.addEventListener("pointerup", onPointerUp, { passive: true });
+    renderer.domElement.addEventListener("pointerleave", onPointerLeave, { passive: true });
     let raf = 0;
     let stopped = false;
     let lastFrameMs = 0;
@@ -631,6 +653,28 @@ const GridBackground: React.FC<GridBackgroundProps> = ({
 
       uniforms.uTime.value =
         timeOffset + clock.getElapsedTime() * speedRef.current;
+
+      // Expire old ripples and sync DataTexture
+      {
+        const nowT = uniforms.uTime.value;
+        const before = activeRipples.length;
+        for (let i = activeRipples.length - 1; i >= 0; i--) {
+          if (nowT - activeRipples[i].t > RIPPLE_LIFETIME) activeRipples.splice(i, 1);
+        }
+        if (activeRipples.length !== before) ripplesDirty = true;
+        if (ripplesDirty) {
+          const count = Math.min(activeRipples.length, RIPPLE_TEX_SIZE);
+          for (let i = 0; i < count; i++) {
+            rippleTexData[i * 4]     = activeRipples[i].x;
+            rippleTexData[i * 4 + 1] = activeRipples[i].y;
+            rippleTexData[i * 4 + 2] = activeRipples[i].t;
+            rippleTexData[i * 4 + 3] = 1.0;
+          }
+          uniforms.uRippleData.value.needsUpdate = true;
+          uniforms.uRippleCount.value = count;
+          ripplesDirty = false;
+        }
+      }
       if (liquidEffect) {
         const liqEffect = liquidEffect as Effect & {
           uniforms: Map<string, THREE.Uniform>;
@@ -663,7 +707,6 @@ const GridBackground: React.FC<GridBackgroundProps> = ({
       camera,
       material,
       clock,
-      clickIx: 0,
       uniforms,
       resizeObserver: ro,
       raf,
@@ -673,6 +716,15 @@ const GridBackground: React.FC<GridBackgroundProps> = ({
       touch,
       liquidEffect,
     };
+
+    if (rippleTriggerRef) {
+      rippleTriggerRef.current = (positions) => {
+        const t = threeRef.current;
+        if (!t) return;
+        const { width, height } = t.renderer.domElement;
+        positions.forEach(({ nx, ny }) => addRipple(nx * width, ny * height));
+      };
+    }
     return () => {
       stopped = true;
       if (!threeRef.current) return;
