@@ -9,7 +9,7 @@ const navLinks = [
   { label: "Connect", href: "/connect" },
 ];
 
-export default function Navbar({ accent, light, bg, borderCol }: { accent?: string; light?: boolean; bg?: string; borderCol?: string }) {
+export default function Navbar({ accent, light, bg, borderCol, hideLinks }: { accent?: string; light?: boolean; bg?: string; borderCol?: string; hideLinks?: boolean }) {
   const logoFill = light ? "#1e1030" : "#e8e0d4";
   const borderColor = borderCol ?? (light ? "rgba(109,40,217,0.2)" : "rgba(255,255,255,0.07)");
   const bgColor = bg ?? (light ? "rgba(250,247,255,0.88)" : "rgba(15,12,10,0.75)");
@@ -45,37 +45,39 @@ export default function Navbar({ accent, light, bg, borderCol }: { accent?: stri
       </TransitionLink>
 
       {/* Right — nav links */}
-      <div
-        className="pointer-events-auto inline-flex items-center gap-1 p-3 rounded-lg"
-        style={{ border: `1px solid ${borderColor}`, background: bgColor, backdropFilter: "blur(10px)" }}
-      >
-        {navLinks.map((link) => (
-          <TransitionLink
-            key={link.href}
-            href={link.href}
-            className="nav-link-slide relative text-xs font-mono px-2 py-0.5 rounded overflow-hidden"
-            style={{ color: linkColor, opacity: 0.6 }}
-            onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
-            onMouseLeave={e => (e.currentTarget.style.opacity = "0.6")}
-          >
-            <span
-              className="nav-link-bg absolute inset-0 rounded"
-              style={{
-                background: linkHoverBg,
-                transform: "translateX(-101%)",
-                transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-              }}
-              aria-hidden
-            />
-            <span
-              className="nav-link-text relative z-10"
-              style={{ "--nav-link-hover-text": linkHoverText } as React.CSSProperties}
+      {!hideLinks && (
+        <div
+          className="pointer-events-auto inline-flex items-center gap-1 p-3 rounded-lg"
+          style={{ border: `1px solid ${borderColor}`, background: bgColor, backdropFilter: "blur(10px)" }}
+        >
+          {navLinks.map((link) => (
+            <TransitionLink
+              key={link.href}
+              href={link.href}
+              className="nav-link-slide relative text-xs font-mono px-2 py-0.5 rounded overflow-hidden"
+              style={{ color: linkColor, opacity: 0.6 }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
+              onMouseLeave={e => (e.currentTarget.style.opacity = "0.6")}
             >
-              {link.label}
-            </span>
-          </TransitionLink>
-        ))}
-      </div>
+              <span
+                className="nav-link-bg absolute inset-0 rounded"
+                style={{
+                  background: linkHoverBg,
+                  transform: "translateX(-101%)",
+                  transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                }}
+                aria-hidden
+              />
+              <span
+                className="nav-link-text relative z-10"
+                style={{ "--nav-link-hover-text": linkHoverText } as React.CSSProperties}
+              >
+                {link.label}
+              </span>
+            </TransitionLink>
+          ))}
+        </div>
+      )}
     </header>
   );
 }

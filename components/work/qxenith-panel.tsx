@@ -110,11 +110,7 @@ export default function QxenithPanel() {
               <TransitionLink
                 href="/qxenith"
                 className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-1 rounded transition-opacity hover:opacity-70"
-                style={{
-                  color: "#fff",
-                  backgroundColor: "rgba(255,255,255,0.12)",
-                  border: "1px solid rgba(255,255,255,0.3)",
-                }}
+                style={{ color: "#fff", backgroundColor: "rgba(255,255,255,0.12)", border: `1px solid ${accent}` }}
               >
                 Detail
               </TransitionLink>
@@ -123,11 +119,7 @@ export default function QxenithPanel() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-1 rounded transition-opacity hover:opacity-70 group"
-                style={{
-                  color: "#fff",
-                  backgroundColor: "rgba(255,255,255,0.12)",
-                  border: "1px solid rgba(255,255,255,0.3)",
-                }}
+                style={{ color: "#fff", backgroundColor: "rgba(255,255,255,0.12)", border: `1px solid ${accent}` }}
               >
                 Live
                 <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

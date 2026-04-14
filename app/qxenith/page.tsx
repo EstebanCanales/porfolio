@@ -1,7 +1,6 @@
-import TransitionLink from "@/components/transition-link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 
@@ -61,7 +60,7 @@ export const metadata: Metadata = {
 
 export default function QxenithPage() {
   return (
-    <div className="min-h-screen bg-white flex flex-col relative" style={{ color: "#1e1030" }}>
+    <div className="min-h-screen bg-white flex pt-20 flex-col relative" style={{ color: "#1e1030" }}>
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
@@ -73,21 +72,11 @@ export default function QxenithPage() {
         }}
       />
 
-      <Navbar accent={accent} light bg="rgba(255,255,255,0.92)" borderCol={`${accent}40`} />
+      <Navbar accent={accent} light bg="rgba(255,255,255,0.92)" borderCol={`${accent}40`} hideLinks />
 
-      <main className="flex-1 flex flex-col px-6 md:px-10 lg:px-16 pt-14 pb-20 relative z-10">
-        {/* Back */}
-        <TransitionLink
-          href="/work"
-          className="inline-flex items-center gap-1.5 text-xs font-mono mb-12 group w-fit opacity-50 hover:opacity-100 transition-opacity"
-          style={{ color: "#1e1030" }}
-        >
-          <ArrowLeft className="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />
-          back
-        </TransitionLink>
-
+      <main className="flex-1 flex flex-col px-6 pt-4 pb-6 relative z-10">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <p className="text-[10px] font-mono uppercase tracking-widest mb-2" style={{ color: accentText }}>
             2026 · Creative Technologist
           </p>
